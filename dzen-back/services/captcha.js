@@ -3,16 +3,18 @@ const { createCanvas } = require("canvas");
 const FONT_BASE = 200;
 const FONT_SIZE = 35;
 
+const redis = {};
+
 const randomText = () => Math.random().toString(36).substring(2, 8);
 
 const relativeFont = (width) => {
   const ratio = FONT_SIZE / FONT_BASE;
-  size = width * ratio * 1.5;
+  size = width * ratio;
   return `${size}px serif`;
 };
-const arbitraryRandom = (min, max) => Math.random() * (max - min) + min;
+const angleRandom = (min, max) => Math.random() * (max - min) + min;
 const randomRotation = (degrees = 15) =>
-  (arbitraryRandom(-degrees, degrees) * Math.PI) / 180;
+  (angleRandom(-degrees, degrees) * Math.PI) / 180;
 
 const configureText = (ctx, width, height) => {
   ctx.font = relativeFont(width);
@@ -23,13 +25,27 @@ const configureText = (ctx, width, height) => {
   return text;
 };
 
-const generate = (width, height) => {
+const getCaptcha = async (width, height) => {
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
   ctx.rotate(randomRotation());
   const text = configureText(ctx, width, height);
-
-  return { image: canvas.toDataURL(), text: text };
+  const uuid = crypto.randomUUID();
+  redis[uuid] = text;
+  console.log(text);
+  return { image: canvas.toDataURL(), uuid };
 };
 
-module.exports = generate;
+const checkCaptcha = async (text, uuid) => {
+  if (text) {
+    if (redis[uuid] === text) {
+      delete redis[uuid];
+      return true;
+    }
+  }
+  return false;
+};
+module.exports = {
+  getCaptcha,
+  checkCaptcha,
+};
