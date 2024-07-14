@@ -1,4 +1,5 @@
 const { authService } = require("../services");
+const { HttpError } = require("../utils");
 
 const authentificate = async (req, res, next) => {
   const { authorization = "" } = req.headers;

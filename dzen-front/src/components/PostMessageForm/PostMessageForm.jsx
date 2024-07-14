@@ -2,6 +2,9 @@ import { useForm } from "react-hook-form";
 import { validateHtmlTags } from "../../utils";
 import { useState } from "react";
 import parse from "html-react-parser";
+import { useCaptcha } from "../../hooks";
+import { axiosInstance } from "../../api/axiosInstance";
+import { toast } from "react-toastify";
 
 const emailPattern =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
@@ -20,10 +23,39 @@ export function PostMessageForm() {
     formState: { errors },
   } = useForm();
   const [parsedText, setParsedText] = useState(null);
+  const { loading, data: captchaData, error, reload } = useCaptcha();
 
-  const onSubmit = (data) => {
+  const sendPost = async (data) => {
+    const { uuid } = captchaData;
+    const {
+      data: { token },
+    } = await axiosInstance.post("/captcha/check", {
+      uuid,
+      text: data.captcha,
+    });
+    const result = await axiosInstance.post("/posts", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result;
+  };
+
+  const onSubmit = async (data) => {
     console.log(">>>>>>", data);
+    // toast.;
     setParsedText(parse(data.messageText));
+    const response = await toast.promise(sendPost(data), {
+      pending: "Promise is pending",
+      success: "Promise resolved 👌",
+      error: {
+        render: ({ data }) => {
+          return `${data.response.data.message}`;
+        },
+      },
+    });
+    console.log(response);
   };
 
   return (
@@ -41,7 +73,6 @@ export function PostMessageForm() {
                 message: "Only latin letters or digits",
               },
             })}
-            // id="username"
             placeholder="User name"
           />
         </label>
@@ -57,7 +88,6 @@ export function PostMessageForm() {
                 message: "Invalid email address",
               },
             })}
-            // id="email"
             placeholder="E-mail"
             autoComplete="off"
           />
@@ -74,7 +104,6 @@ export function PostMessageForm() {
                 message: "Invalid url",
               },
             })}
-            // id="homepage"
             placeholder="Homepage URL"
             autoComplete="off"
           />
@@ -96,6 +125,15 @@ export function PostMessageForm() {
             autoComplete="off"
           />
         </label>
+        {captchaData?.image && <img src={captchaData.image} />}
+        <button
+          type="button"
+          onClick={() => {
+            reload();
+          }}
+        >
+          reload
+        </button>
         <p>{errors.captcha?.message}</p>
         <label>
           Message

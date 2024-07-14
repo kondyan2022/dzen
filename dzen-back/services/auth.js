@@ -6,10 +6,8 @@ const tokenList = {};
 
 const getToken = async (id) => {
   const payload = { id };
-
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: 60000 });
   tokenList[id] = token;
-
   return token;
 };
 

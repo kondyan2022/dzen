@@ -16,7 +16,7 @@ const checkCaptcha = async (req, res, next) => {
 };
 
 const getCaptchaTest = async (req, res, next) => {
-  const { image, text, uuid } = generate(200, 150);
+  const { image, text, uuid } = captchaService.getCaptcha(200, 150);
   return res.status(201).send(`<img src="${image}" alt='captcha'/>`);
 };
 

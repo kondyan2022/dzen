@@ -7,6 +7,7 @@ require("dotenv").config();
 const app = express();
 
 const captchaRouter = require("./routes/captcha");
+const postsRouter = require("./routes/posts");
 
 const loggerFormat = app.get("env") === "development" ? "dev" : "short";
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/captcha", captchaRouter);
+app.use("/posts", postsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
