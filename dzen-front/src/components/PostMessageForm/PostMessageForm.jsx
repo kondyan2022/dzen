@@ -10,7 +10,9 @@ import {
   validateHtmlTags,
 } from "../../utils/validate";
 import { useCaptcha } from "../../hooks";
-import { axiosInstance } from "../../api/axiosInstance";
+import { sendPost } from "../../api";
+
+const MAX_IMAGE_SIZE = { width: 320, height: 240 };
 
 export function PostMessageForm() {
   const {
@@ -18,46 +20,97 @@ export function PostMessageForm() {
     handleSubmit,
     // watch,
     // reset,
-    // setValue,
+    setValue,
     formState: { errors },
   } = useForm();
   const [parsedText, setParsedText] = useState(null);
+  const [resizedImage, setResizedImage] = useState(null);
   const { loading, data: captchaData, error, reload } = useCaptcha();
 
-  const sendPost = async (data) => {
-    const { uuid } = captchaData;
-    const {
-      data: { token },
-    } = await axiosInstance.post("/captcha/check", {
-      uuid,
-      text: data.captcha,
-    });
-    delete data.captcha;
-    if (!data.homepage) {
-      delete data.homepage;
-    }
-    const result = await axiosInstance.post("/posts", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return result;
-  };
-
   const onSubmit = async (data) => {
-    console.log(">>>>>>", data);
     setParsedText(parse(data.text));
-    const response = await toast.promise(sendPost(data), {
+    console.log(sendPost);
+    const response = await toast.promise(sendPost(data, captchaData), {
       pending: "Sending message",
       success: "Message sent 👌",
       error: {
         render: ({ data }) => {
-          return `${data.response.data.message}`;
+          return `${data.response.data?.message}`;
         },
       },
     });
     console.log(response);
+  };
+
+  const onChange = async (event) => {
+    // function fileToDataUri(field) {
+    //   return new Promise((resolve) => {
+    //     const reader = new FileReader();
+    //     reader.addEventListener("load", () => {
+    //       resolve(reader.result);
+    //     });
+    //     reader.readAsDataURL(field);
+    //   });
+    // }
+    if (event.target.files.length) {
+      const file = event.target.files[0];
+      const { type, size } = file;
+      console.log(size);
+      if (type === "text/plain" && size > 100 * 10024) {
+        toast.error("maximum text file size is 100Kb");
+        setValue("file", "");
+      } else {
+        const src = URL.createObjectURL(file);
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = (fileReaderEvent) => {
+          const imageAsBase64 = fileReaderEvent.target.result;
+          const originalImage = document.createElement("img");
+          originalImage.src = imageAsBase64;
+          const resizingFactor =
+            (originalImage.height * MAX_IMAGE_SIZE.width) /
+              originalImage.width >
+            MAX_IMAGE_SIZE.height
+              ? MAX_IMAGE_SIZE.height / originalImage.height
+              : MAX_IMAGE_SIZE.width / originalImage.width;
+
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          // const originalWidth = imgToCompress.width;
+          // const originalHeight = imgToCompress.height;
+
+          const canvasWidth = originalImage.width * resizingFactor;
+          const canvasHeight = originalImage.height * resizingFactor;
+
+          canvas.width = canvasWidth;
+          canvas.height = canvasHeight;
+
+          context.drawImage(
+            originalImage,
+            0,
+            0,
+            originalImage.width * resizingFactor,
+            originalImage.height * resizingFactor
+          );
+
+          // reducing the quality of the image
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                setResizedImage(URL.createObjectURL(blob));
+                // resizedImage.src = URL.createObjectURL(resizedImageBlob);
+              }
+            },
+            "image/jpeg",
+            80
+          );
+        };
+
+        // originalImage.src = src;
+        // setResizedImage(src);
+      }
+    }
   };
 
   return (
@@ -154,7 +207,14 @@ export function PostMessageForm() {
           />
         </label>
         <p>{errors.text?.message}</p>
-
+        <input
+          {...register("file")}
+          type="file"
+          accept=".png,.jpeg,.jpg,.gif,.txt"
+          onChange={onChange}
+          // id="file"
+        />
+        {resizedImage && <img src={resizedImage} alt="uploaded image" />}
         <button type="submit">Send</button>
       </form>
       {parsedText}

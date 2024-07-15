@@ -1,7 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
+
 require("dotenv").config();
 
 const app = express();
@@ -13,8 +13,9 @@ const loggerFormat = app.get("env") === "development" ? "dev" : "short";
 
 app.use(logger(loggerFormat));
 app.use(cors());
-app.use(cookieParser());
+
 app.use(express.json());
+app.use("/files", express.static("temp"));
 
 app.use("/captcha", captchaRouter);
 app.use("/posts", postsRouter);

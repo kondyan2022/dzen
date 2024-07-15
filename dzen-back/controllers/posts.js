@@ -1,9 +1,11 @@
 const { ctrlWrapper } = require("../utils");
 
 const addPost = async (req, res, next) => {
-  const { username, email, homepage } = req.body;
-  const file = req.file;
-  console.log(file);
+  const { username, email, homepage, id } = req.body;
+  const file = req?.file;
+
+  const files = req?.files;
+  console.log("Controllers", files);
   return res
     .status(201)
     .json({ message: " post ok", username, email, homepage });

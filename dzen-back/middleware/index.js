@@ -2,7 +2,7 @@ const validateBody = require("./validateBody");
 const validateQuery = require("./validateQuery");
 // // const upload = require("./upload_old");
 const upload = require("./upload");
-// const resizeAvatar = require("./resizeAvatar");
+const resizeImage = require("./resizeImage");
 // const isSingleFileExist = require("./isSingleFileExist");
 const authentificate = require("./autentificate");
 // const validateAndConvertDateBody = require("./validateAndConvertDateBody");
@@ -12,7 +12,7 @@ module.exports = {
   validateBody,
   validateQuery,
   upload,
-  //   resizeAvatar,
+  resizeImage,
   //   isSingleFileExist,
   authentificate,
   //   validateAndConvertDateBody,
