@@ -1,5 +1,5 @@
-// const validateBody = require("./validateBody");
-// const validateQuery = require("./validateQuery");
+const validateBody = require("./validateBody");
+const validateQuery = require("./validateQuery");
 // // const upload = require("./upload_old");
 const upload = require("./upload");
 // const resizeAvatar = require("./resizeAvatar");
@@ -9,8 +9,8 @@ const authentificate = require("./autentificate");
 // const isUserHaveProfile = require("./isUserHaveProfile");
 
 module.exports = {
-  //   validateBody,
-  //   validateQuery,
+  validateBody,
+  validateQuery,
   upload,
   //   resizeAvatar,
   //   isSingleFileExist,

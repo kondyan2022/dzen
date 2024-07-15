@@ -1,17 +1,16 @@
-import { useForm } from "react-hook-form";
-import { validateHtmlTags } from "../../utils";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import parse from "html-react-parser";
+import { toast } from "react-toastify";
+import {
+  captchaPattern,
+  emailPattern,
+  urlPattern,
+  usernamePattern,
+  validateHtmlTags,
+} from "../../utils/validate";
 import { useCaptcha } from "../../hooks";
 import { axiosInstance } from "../../api/axiosInstance";
-import { toast } from "react-toastify";
-
-const emailPattern =
-  /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-const urlPattern =
-  /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.,~#?&/=]*)$/;
-const usernamePattern = /^[a-zA-Z0-9]+$/;
-const captchaPattern = /^[a-zA-Z0-9]+$/;
 
 export function PostMessageForm() {
   const {
@@ -33,6 +32,10 @@ export function PostMessageForm() {
       uuid,
       text: data.captcha,
     });
+    delete data.captcha;
+    if (!data.homepage) {
+      delete data.homepage;
+    }
     const result = await axiosInstance.post("/posts", data, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -44,11 +47,10 @@ export function PostMessageForm() {
 
   const onSubmit = async (data) => {
     console.log(">>>>>>", data);
-    // toast.;
-    setParsedText(parse(data.messageText));
+    setParsedText(parse(data.text));
     const response = await toast.promise(sendPost(data), {
-      pending: "Promise is pending",
-      success: "Promise resolved 👌",
+      pending: "Sending message",
+      success: "Message sent 👌",
       error: {
         render: ({ data }) => {
           return `${data.response.data.message}`;
@@ -98,7 +100,6 @@ export function PostMessageForm() {
           <input
             type="text"
             {...register("homepage", {
-              required: "Please enter your home page",
               pattern: {
                 value: urlPattern,
                 message: "Invalid url",
@@ -138,7 +139,7 @@ export function PostMessageForm() {
         <label>
           Message
           <textarea
-            {...register("messageText", {
+            {...register("text", {
               required: "Required field",
               validate: validateHtmlTags,
               // validate: (fieldValue) => fieldValue !== "111" || "not 111",
@@ -152,7 +153,7 @@ export function PostMessageForm() {
             autoComplete="off"
           />
         </label>
-        <p>{errors.messageText?.message}</p>
+        <p>{errors.text?.message}</p>
 
         <button type="submit">Send</button>
       </form>

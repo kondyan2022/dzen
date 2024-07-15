@@ -1,7 +1,6 @@
+import { aTagPattern, tagPattern, urlPattern } from "./validatePattern";
+
 export const validateHtmlTags = (text) => {
-  const tagPattern = /<\/?(a|code|i|strong)(\s+[^>]*?)?>|<\/?[^>]+>/g;
-  const aTagPattern = /^href\s*=\s*"([^"]*)"\s+title\s*=\s*"([^"]+)"\s*$/;
-  const urlPattern = /^(http(s)?):\/\/[^\s/$.?#].[^\s]*$/i;
   const tagStack = [];
   let match;
 
@@ -20,23 +19,25 @@ export const validateHtmlTags = (text) => {
       const aTagMatch = aTagPattern.exec(attributes);
       console.log(aTagMatch);
       if (!aTagMatch) {
-        return `Тег <a> должен содержать атрибуты href и title в указаном порядке.`;
+        return `The <a> tag must contain the href and title attributes in that order.`;
       }
       const url = aTagMatch[1];
       const title = aTagMatch[2];
       if (!urlPattern.test(url)) {
-        return `Атрибут href в теге <a> должен содержать корректный URL.`;
+        return `The href attribute in the <a> tag must contain a valid URL.`;
       }
       if (!title) {
-        return `Атрибут title в теге <a> не должен быть пустым.`;
+        return `The title attribute in the <a> tag must not be empty.`;
       }
     } else if (attributes) {
-      return `Tag </${tag} не должен содержать атрибутов>`;
+      return `Tag <${
+        isClosingTag ? "/" : ""
+      }${tag}> must not contain attributes`;
     }
 
     if (isClosingTag) {
       if (!tagStack.length || tagStack[tagStack.length - 1] !== tag) {
-        return `Тег </${tag}> не соответствует последнему открытому тегу.`;
+        return `The </${tag}> tag does not match the last opened tag.`;
       }
       tagStack.pop();
     } else {
@@ -45,7 +46,7 @@ export const validateHtmlTags = (text) => {
   }
 
   if (tagStack.length) {
-    return `Тег <${tagStack[tagStack.length - 1]}> not closed`;
+    return `Tag <${tagStack[tagStack.length - 1]}> not closed`;
   }
 
   return true;

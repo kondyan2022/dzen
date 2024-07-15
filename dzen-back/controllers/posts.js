@@ -1,8 +1,9 @@
-const { use } = require("../app");
 const { ctrlWrapper } = require("../utils");
 
 const addPost = async (req, res, next) => {
   const { username, email, homepage } = req.body;
+  const file = req.file;
+  console.log(file);
   return res
     .status(201)
     .json({ message: " post ok", username, email, homepage });
