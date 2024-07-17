@@ -4,9 +4,12 @@ const fs = require("fs/promises");
 const IMAGE_SIZE = { width: 320, height: 240 };
 
 const resizeAvatar = async (req, res, next) => {
+  if (!req.file) {
+    return next();
+  }
   const { path } = req.file;
   if (!path) {
-    next();
+    return next();
   }
   try {
     const image = await Jimp.read(path);

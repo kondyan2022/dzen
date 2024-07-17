@@ -20,7 +20,8 @@ const multerConfig = multer.diskStorage({
   filename: (req, file, cb) => {
     console.log("multer-config", file);
     const filename = randomUUID();
-    cb(null, filename + path.extname(file.originalname));
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `${filename}.${ext}`);
   },
 });
 

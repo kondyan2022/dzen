@@ -1,8 +1,20 @@
 const app = require("./app");
 // const redisClient = require("./redis");
+const sequelize = require("./db");
 
 const { PORT = 3000 } = process.env;
 
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("DB Connection has been established successfully.");
+    app.listen(PORT, () => {
+      console.log(`Server running. Use our API on port: ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Unable to connect to the database: ", error);
+  });
 // redisClient.on("error", (err) => {
 //   console.log("Redis Client Error", err);
 //   redisClient.disconnect();
@@ -13,6 +25,3 @@ const { PORT = 3000 } = process.env;
 //     console.log(`Server running. Use our API on port: ${PORT}`);
 //   });
 // });
-app.listen(PORT, () => {
-  console.log(`Server running. Use our API on port: ${PORT}`);
-});
