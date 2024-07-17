@@ -1,6 +1,6 @@
 const app = require("./app");
 // const redisClient = require("./redis");
-const sequelize = require("./db");
+const { sequelize } = require("./models");
 
 const { PORT = 3000 } = process.env;
 

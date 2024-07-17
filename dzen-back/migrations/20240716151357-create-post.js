@@ -11,26 +11,28 @@ module.exports = {
       },
       parentId: {
         type: Sequelize.INTEGER,
-        defaultValue: 0,
+        // defaultValue: 0,
       },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: { model: "users", key: "id" },
       },
-      message: {
+      messageText: {
         type: Sequelize.TEXT,
       },
-      file: {
+      attachedFile: {
         type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
       },
     });
     await queryInterface.addIndex("posts", ["createdAt"]);

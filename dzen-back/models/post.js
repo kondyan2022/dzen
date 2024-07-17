@@ -8,23 +8,28 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      Post.belongsTo(models.User);
-      models.User.hasMany(Post);
+      Post.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+        targetKey: "id",
+      });
+      models.User.hasMany(Post, {
+        foreignKey: "userId",
+        as: "posts",
+        targetKey: "id",
+      });
     }
   }
   Post.init(
     {
-      parentId: { type: DataTypes.INTEGER, defaultValue: 0 },
+      parentId: {
+        type: DataTypes.INTEGER,
+      },
       userId: {
         type: DataTypes.INTEGER,
-        references: {
-          model: User,
-          key: "id",
-        },
       },
-      message: DataTypes.TEXT,
-      file: DataTypes.STRING,
+      messageText: DataTypes.TEXT,
+      attachedFile: DataTypes.STRING,
     },
     {
       sequelize,

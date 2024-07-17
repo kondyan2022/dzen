@@ -8,13 +8,13 @@ module.exports = {
       RETURNS trigger LANGUAGE 'plpgsql' 
       AS $$ 
       BEGIN 
-        IF NEW.parentId IS NOT NULL THEN
-         UPDATE answers 
+        IF NEW."parentId" IS NOT NULL THEN
+         UPDATE answers
          SET amount = amount + 1 
-         WHERE  postId = NEW.parentId;
+         WHERE  "postId" = NEW."parentId";
          IF NOT FOUND THEN
-          INSERT INTO answers(postId, amount) 
-          VALUES(NEW.parentId, 1);
+          INSERT INTO answers("postId", "amount") 
+          VALUES(NEW."parentId", 1);
         END IF;
       END IF;
       RETURN NEW; 

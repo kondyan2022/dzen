@@ -22,7 +22,14 @@ const addPost = Joi.object({
 });
 
 const getAll = Joi.object({
-  page: Joi.number(),
+  page: Joi.number().min(0),
+  limit: Joi.number().min(1),
+  field: Joi.string().valid("username", "email", "createdAt"),
+  direction: Joi.string().valid("ASC", "DESC"),
 });
 
-module.exports = { addPost };
+const getByParent = Joi.object({
+  parentId: Joi.number().min(1).required(),
+});
+
+module.exports = { addPost, getAll, getByParent };
