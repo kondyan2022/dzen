@@ -1,5 +1,4 @@
 const { ctrlWrapper } = require("../utils");
-// const PostModel = require("../models/post");
 const { Post, sequelize } = require("../models");
 
 const getAllPosts = async (req, res, next) => {
@@ -9,7 +8,7 @@ const getAllPosts = async (req, res, next) => {
     field = "createdAt",
     direction = "DESC",
   } = req.query;
-  const offset = (page + 1) * limit;
+  const offset = page * limit;
   const order = [["user", field, direction]];
   if (field === "createdAt") {
     order[0].shift();
@@ -26,7 +25,7 @@ const getAllPosts = async (req, res, next) => {
     offset,
     limit,
   });
-  const postCount = await Post.count();
+  const postCount = await Post.count({ where: { parentId: null } });
   const pageCount = Math.ceil(postCount / limit);
   return res.json({
     page,
