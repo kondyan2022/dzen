@@ -1,16 +1,12 @@
 const { randomUUID } = require("crypto");
 const multer = require("multer");
 const path = require("path");
+const {
+  allowedDocumentMimeType,
+  allowedImageMimeType,
+} = require("../utils/allowedMimeTypes");
 
 const tempDir = path.join(__dirname, "../", "temp");
-const allowedImageMimeType = [
-  "image/png",
-  "image/jpg",
-  "image/jpeg",
-  "image/gif",
-];
-
-const allowedDocumentMimeType = ["text/plain"];
 
 maxSize = 2000 * 1024;
 maxDocSize = (100 + 5) * 1024;
@@ -18,7 +14,6 @@ maxDocSize = (100 + 5) * 1024;
 const multerConfig = multer.diskStorage({
   destination: tempDir,
   filename: (req, file, cb) => {
-    console.log("multer-config", file);
     const filename = randomUUID();
     const ext = file.mimetype.split("/")[1];
     cb(null, `${filename}.${ext}`);

@@ -1,5 +1,5 @@
 const { ctrlWrapper } = require("../utils");
-const { Post, sequelize } = require("../models");
+const { postService } = require("../services");
 
 const getAllPosts = async (req, res, next) => {
   const {
@@ -8,57 +8,30 @@ const getAllPosts = async (req, res, next) => {
     field = "createdAt",
     direction = "DESC",
   } = req.query;
-  const offset = page * limit;
-  const order = [["user", field, direction]];
-  if (field === "createdAt") {
-    order[0].shift();
-  }
 
-  const posts = await Post.findAll({
-    where: { parentId: null },
-    include: [
-      { model: sequelize.models.User, as: "user" },
-      { model: sequelize.models.Answers, as: "answers_count" },
-    ],
-    // order: [["user", "username", direction]],
-    order,
-    offset,
-    limit,
-  });
-  const postCount = await Post.count({ where: { parentId: null } });
-  const pageCount = Math.ceil(postCount / limit);
-  return res.json({
-    page,
-    limit,
-    pageCount,
-    postCount,
-    sort: { field, direction },
-    posts,
-  });
+  return res.json(
+    await postService.fetchAllRootPosts({ page, limit, field, direction })
+  );
 };
 
 const getPostsByParent = async (req, res, next) => {
   const { parentId } = req.params;
-
-  const posts = await Post.findAll({
-    where: { parentId },
-    include: [
-      { model: sequelize.models.User, as: "user" },
-      { model: sequelize.models.Answers, as: "answers_count" },
-    ],
-  });
-  return res.json(posts);
+  return res.json(await postService.fetchPostsByParent(parentId));
 };
 
 const addPost = async (req, res, next) => {
-  const { username, email, homepage, id } = req.body;
+  const { username, email, homepage, text, parentId } = req.body;
   const file = req?.file;
-
-  const files = req?.files;
-  console.log("Controllers", files);
-  return res
-    .status(201)
-    .json({ message: " post ok", username, email, homepage });
+  return res.status(201).json(
+    await postService.createPost({
+      username,
+      email,
+      homepage,
+      text,
+      parentId,
+      file,
+    })
+  );
 };
 
 module.exports = {

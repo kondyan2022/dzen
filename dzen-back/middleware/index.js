@@ -7,7 +7,7 @@ const resizeImage = require("./resizeImage");
 const authentificate = require("./autentificate");
 // const validateAndConvertDateBody = require("./validateAndConvertDateBody");
 // const isUserHaveProfile = require("./isUserHaveProfile");
-
+const checkParentId = require("./checkParentId");
 module.exports = {
   validateBody,
   validateQuery,
@@ -17,4 +17,5 @@ module.exports = {
   authentificate,
   //   validateAndConvertDateBody,
   //   isUserHaveProfile,
+  checkParentId,
 };

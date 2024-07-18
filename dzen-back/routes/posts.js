@@ -7,6 +7,7 @@ const {
   validateBody,
   resizeImage,
   validateQuery,
+  checkParentId,
 } = require("../middleware");
 const { postsSchema } = require("../schemas");
 const validateParams = require("../middleware/validateParams");
@@ -15,10 +16,11 @@ const router = express.Router();
 
 router.post(
   "/",
-  authentificate,
+  // authentificate,
   upload.single("file"),
-  resizeImage,
   validateBody(postsSchema.addPost),
+  checkParentId,
+  resizeImage,
   ctrlPosts.addPost
 );
 router.get("/", validateQuery(postsSchema.getAll), ctrlPosts.getAllPosts);

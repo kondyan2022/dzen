@@ -10,6 +10,7 @@ const addPost = Joi.object({
   username: Joi.string().pattern(usernamePattern).required(),
   email: Joi.string().pattern(emailPattern).required(),
   homepage: Joi.string().pattern(urlPattern),
+  parentId: Joi.number(),
   text: Joi.string()
     .required()
     .custom((value, helper) => {
@@ -17,7 +18,7 @@ const addPost = Joi.object({
       if (typeof result === "string") {
         return helper.message(`"text":${result}`);
       }
-      return true;
+      return value;
     }),
 });
 
