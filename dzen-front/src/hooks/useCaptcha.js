@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { axiosInstance } from "../api/axiosInstance";
+import { endpoints } from "../api";
 
 export function useCaptcha() {
   const [data, setData] = useState();
@@ -14,7 +15,7 @@ export function useCaptcha() {
   useEffect(() => {
     setLoading(true);
     axiosInstance
-      .post("/captcha")
+      .post(endpoints.captcha.getCaptcha)
       .then((data) => {
         setData(data?.data);
       })

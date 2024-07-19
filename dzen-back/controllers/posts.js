@@ -3,7 +3,7 @@ const { postService } = require("../services");
 
 const getAllPosts = async (req, res, next) => {
   const {
-    page = 0,
+    page = 1,
     limit = 25,
     field = "createdAt",
     direction = "DESC",

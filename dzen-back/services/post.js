@@ -10,7 +10,7 @@ const checkParentId = async (parentId) => {
 };
 
 const fetchAllRootPosts = async ({ page, limit, field, direction }) => {
-  const offset = page * limit;
+  const offset = (page - 1) * limit;
   const order = [["user", field, direction]];
   if (field === "createdAt") {
     order[0].shift();

@@ -4,12 +4,13 @@ const MAX_IMAGE_SIZE = { width: 320, height: 240 };
 
 export function useResizedImage() {
   const [image, setImage] = useState();
-  //   const [error, setError] = useState();
+  const [ratio, setRatio] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const loadImage = useCallback((file) => {
     if (!file) {
       setImage(null);
+      setRatio(0);
       return;
     }
     setLoading(true);
@@ -22,6 +23,7 @@ export function useResizedImage() {
     };
     originalImage.onload = () => {
       let resizingFactor = 1;
+      console.log(originalImage.width, originalImage.height);
       if (
         originalImage.height > MAX_IMAGE_SIZE.height ||
         originalImage.width > MAX_IMAGE_SIZE.width
@@ -32,26 +34,21 @@ export function useResizedImage() {
             ? MAX_IMAGE_SIZE.height / originalImage.height
             : MAX_IMAGE_SIZE.width / originalImage.width;
       }
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      canvas.width = originalImage.width * resizingFactor;
-      canvas.height = originalImage.height * resizingFactor;
-
-      context.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
-
-      const imageSrcData = canvas.toDataURL();
-
-      setImage(imageSrcData);
+      setRatio(resizingFactor);
+      if (resizingFactor === 1) {
+        setImage(originalImage.src);
+      } else {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        canvas.width = originalImage.width * resizingFactor;
+        canvas.height = originalImage.height * resizingFactor;
+        context.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+        const imageSrcData = canvas.toDataURL("image/jpeg", 0.9);
+        setImage(imageSrcData);
+      }
       setLoading(false);
     };
   }, []);
 
-  //   useEffect(() => {
-  //     if (image) {
-  //       console.log(URL.createObjectURL(image));
-  //     }
-  //   }, [image]);
-
-  return [image, loadImage, loading];
+  return [image, loadImage, ratio, loading];
 }

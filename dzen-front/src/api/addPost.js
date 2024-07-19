@@ -1,11 +1,12 @@
-// import { dataURI2Blob } from "../utils";
+import { urlToFile } from "../utils/urlToFile";
 import { axiosInstance } from "./axiosInstance";
+import { endpoints } from "./endpoints";
 
-export const sendPost = async (data, captchaData) => {
+export const sendPost = async (data, captchaData, resizedImage, ratio) => {
   const { uuid } = captchaData;
   const {
     data: { token },
-  } = await axiosInstance.post("/captcha/check", {
+  } = await axiosInstance.post(endpoints.captcha.checkCaptcha, {
     uuid,
     text: data.captcha,
   });
@@ -13,26 +14,20 @@ export const sendPost = async (data, captchaData) => {
   if (!data.homepage) {
     delete data.homepage;
   }
-  let dataForSend = { ...data, file: data.file[0] };
-  // const formData = new FormData();
-  // if (imageUri) {
-  //   const file = dataURI2Blob(imageUri);
+  let dataForSend = {
+    ...data,
+    file: ratio === 1 ? data.file[0] : urlToFile(resizedImage),
+  };
 
-  //   for (let key of Object.keys(data)) {
-  //     if (key === "file") {
-  //       formData.append("file", file, file.name);
-  //       continue;
-  //     }
-  //     formData.append(key, data[key]);
-  //   }
-  //   dataForSend = formData;
-  // }
-
-  const result = await axiosInstance.post("/posts", dataForSend, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const result = await axiosInstance.post(
+    endpoints.posts.addPost,
+    dataForSend,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return result;
 };

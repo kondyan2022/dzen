@@ -15,8 +15,9 @@ const multerConfig = multer.diskStorage({
   destination: tempDir,
   filename: (req, file, cb) => {
     const filename = randomUUID();
-    const ext = file.mimetype.split("/")[1];
-    cb(null, `${filename}.${ext}`);
+    console.log(file);
+    const ext = path.extname(file.originalname);
+    cb(null, `${filename}${ext}`);
   },
 });
 

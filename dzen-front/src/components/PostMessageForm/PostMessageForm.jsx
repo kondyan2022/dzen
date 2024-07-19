@@ -24,14 +24,14 @@ export function PostMessageForm() {
     formState: { errors },
   } = useForm();
   const [parsedText, setParsedText] = useState(null);
-  const [resizedImage, setResizedImage] = useResizedImage();
+  const [resizedImage, setResizedImage, ratio] = useResizedImage();
   const { loading, data: captchaData, error, reload } = useCaptcha();
 
   const onSubmit = async (data) => {
     setParsedText(parse(data.text));
     console.log(data);
     const response = await toast.promise(
-      sendPost(data, captchaData, resizedImage),
+      sendPost(data, captchaData, resizedImage, ratio),
       {
         pending: "Sending message",
         success: "Message sent 👌",
@@ -49,7 +49,6 @@ export function PostMessageForm() {
     if (event.target.files.length) {
       const file = event.target.files[0];
       const { type, size } = file;
-      console.log(size);
       if (type === "text/plain") {
         setResizedImage(null);
         if (size > 100 * 10024) {
