@@ -14,10 +14,15 @@ export const sendPost = async (data, captchaData, resizedImage, ratio) => {
   if (!data.homepage) {
     delete data.homepage;
   }
-  let dataForSend = {
-    ...data,
-    file: ratio === 1 ? data.file[0] : urlToFile(resizedImage),
-  };
+
+  const dataForSend = { ...data };
+  if (data.file.length) {
+    if (ratio === 1) {
+      dataForSend.file = urlToFile(resizedImage);
+    } else {
+      dataForSend.file = data.file[0];
+    }
+  }
 
   const result = await axiosInstance.post(
     endpoints.posts.addPost,

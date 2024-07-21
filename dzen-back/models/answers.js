@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "post",
       });
       models.Post.hasOne(models.Answers, {
-        foreignKey: "id",
+        foreignKey: "postId",
         as: "answers_count",
       });
     }

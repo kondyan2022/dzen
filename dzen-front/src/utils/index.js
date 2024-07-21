@@ -1,2 +1,2 @@
-export * from "./dataURI2Blob";
+export * from "./urlToFile";
 export * from "./paramsToObject";

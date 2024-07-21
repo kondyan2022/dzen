@@ -13,12 +13,12 @@ const relativeFont = (width) => {
   return `${size}px serif`;
 };
 const angleRandom = (min, max) => Math.random() * (max - min) + min;
-const randomRotation = (degrees = 15) =>
+const randomRotation = (degrees = 10) =>
   (angleRandom(-degrees, degrees) * Math.PI) / 180;
 
 const configureText = (ctx, width, height) => {
   ctx.font = relativeFont(width);
-  ctx.textBaseline = "bottom";
+  // ctx.textBaseline = "bottom";
   ctx.textAlign = "center";
   const text = randomText();
   ctx.fillText(text, width / 2, height / 2);

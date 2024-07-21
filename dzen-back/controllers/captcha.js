@@ -2,7 +2,7 @@ const { captchaService, authService } = require("../services");
 const { ctrlWrapper, HttpError } = require("../utils");
 
 const createCaptcha = async (req, res, next) => {
-  return res.status(201).json(await captchaService.getCaptcha(200, 150));
+  return res.status(201).json(await captchaService.getCaptcha(200, 120));
   //   console.log(captchaService.getCaptcha(200, 150));
   //   return res.status(201).json({ message: "Hello" });
 };
@@ -16,7 +16,7 @@ const checkCaptcha = async (req, res, next) => {
 };
 
 const getCaptchaTest = async (req, res, next) => {
-  const { image, text, uuid } = captchaService.getCaptcha(200, 150);
+  const { image, text, uuid } = captchaService.getCaptcha(100, 40);
   return res.status(201).send(`<img src="${image}" alt='captcha'/>`);
 };
 

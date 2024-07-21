@@ -3,6 +3,8 @@ import { getChildPosts } from "../api";
 
 export const usePosts = () => {
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState();
 
   const setPostList = useCallback((postList) => {
     setPosts(
@@ -14,8 +16,9 @@ export const usePosts = () => {
       }))
     );
   }, []);
-  //   console.log("from hook", posts);
+
   const setChildPosts = useCallback(async (id) => {
+    setLoading(true);
     try {
       const childPostList = await getChildPosts(id);
       if (childPostList.length) {
@@ -25,36 +28,45 @@ export const usePosts = () => {
           childListExpanded: false,
           childList: [],
         }));
-        setPosts((prev) =>
-          prev.map((elem) =>
-            elem.id === id
-              ? {
-                  ...elem,
-                  childListLoaded: true,
-                  childListExpanded: true,
-                  childList: newList,
-                }
-              : { ...elem }
-          )
-        );
+        console.log("from hook", newList);
+        setPosts((prev) => {
+          const treeRec = (items) =>
+            items.map((elem) =>
+              elem.id === id
+                ? {
+                    ...elem,
+                    childListLoaded: true,
+                    childListExpanded: true,
+                    childList: newList,
+                  }
+                : { ...elem, childList: treeRec(elem.childList) }
+            );
+
+          return treeRec(prev);
+        });
       }
     } catch (error) {
       console.log(error);
+      setError(error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   const setChildExpand = useCallback((id, flag) => {
-    setPosts((prev) =>
-      prev.map((elem) =>
-        elem.id === id
-          ? {
-              ...elem,
-              childListExpanded: flag,
-            }
-          : { ...elem }
-      )
-    );
+    setPosts((prev) => {
+      const treeRec = (items) =>
+        items.map((elem) =>
+          elem.id === id
+            ? {
+                ...elem,
+                childListExpanded: flag,
+              }
+            : { ...elem, childList: treeRec(elem.childList) }
+        );
+      return treeRec(prev);
+    });
   }, []);
 
-  return [posts, setPostList, setChildPosts, setChildExpand];
+  return [posts, setPostList, setChildPosts, setChildExpand, loading, error];
 };

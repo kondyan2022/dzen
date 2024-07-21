@@ -1,5 +1,7 @@
 export const tagPattern = /<\/?(a|code|i|strong)(\s+[^>]*?)?>|<\/?[^>]+>/g;
 export const aTagPattern = /^href\s*=\s*"([^"]*)"\s+title\s*=\s*"([^"]+)"\s*$/;
+export const scriptOpenTagPattern = /<script(\s?.*?)>/;
+export const scriptCloseTagPattern = /<\/script(\s?.*?)>/;
 
 export const emailPattern =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;

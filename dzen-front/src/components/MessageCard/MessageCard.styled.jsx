@@ -2,7 +2,8 @@ import styled from "@emotion/styled";
 
 export const MessageCardWrapper = styled.div`
   /* box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.02); */
-  margin-left: ${(props) => `${props.level * 40}px`};
+  margin-left: ${(props) => `${!props.level ? 0 : 40}px`};
+  margin-bottom: 20px;
 `;
 
 export const MessageTitle = styled.div`
@@ -13,6 +14,9 @@ export const MessageTitle = styled.div`
   background-color: #f9f9f9;
   div:first-of-type {
     font-weight: 600;
+  }
+  .reply-button {
+    padding: 0;
   }
 `;
 
@@ -30,8 +34,10 @@ export const ChildNavigator = styled.div`
     text-align: center;
     transition: all 300ms linear;
     border: none;
-    /* background-color: #fff; */
-    &:hover {
+    &:disabled {
+      cursor: default;
+    }
+    &:hover:enabled {
       color: navy;
       transform: scale(1.3);
       outline: none;

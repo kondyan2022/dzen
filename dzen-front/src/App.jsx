@@ -7,9 +7,6 @@ function App() {
   return (
     <>
       <Outlet />
-      <div>
-        <PostMessageForm />
-      </div>
       <ToastContainer autoClose={2000} />
     </>
   );

@@ -43,7 +43,7 @@ export function useResizedImage() {
         canvas.width = originalImage.width * resizingFactor;
         canvas.height = originalImage.height * resizingFactor;
         context.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
-        const imageSrcData = canvas.toDataURL("image/jpeg", 0.9);
+        const imageSrcData = canvas.toDataURL("image/jpeg", 98);
         setImage(imageSrcData);
       }
       setLoading(false);

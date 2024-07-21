@@ -12,9 +12,11 @@ import {
 import { useCaptcha } from "../../hooks";
 import { sendPost } from "../../api";
 import { useResizedImage } from "../../hooks/useResizedImage";
+import { PostMessageFormWrapper } from "./PostMessageForm.styled";
+import { CloseCircleOutlined, RedoOutlined } from "@ant-design/icons";
 // import { resizedImageIfNeed } from "../../utils";
 
-export function PostMessageForm() {
+export const PostMessageForm = ({ level = 0, parentId, handleClose }) => {
   const {
     register,
     handleSubmit,
@@ -30,6 +32,9 @@ export function PostMessageForm() {
   const onSubmit = async (data) => {
     setParsedText(parse(data.text));
     console.log(data);
+    if (parentId) {
+      data["parentId"] = parentId;
+    }
     const response = await toast.promise(
       sendPost(data, captchaData, resizedImage, ratio),
       {
@@ -37,12 +42,15 @@ export function PostMessageForm() {
         success: "Message sent 👌",
         error: {
           render: ({ data }) => {
-            return `${data.response.data?.message}`;
+            console.log(data);
+
+            return `${data.response?.data?.message}. Try again!`;
           },
         },
       }
     );
-    console.log(response);
+    reload();
+    setValue("captcha", "");
   };
 
   const onChange = async (event) => {
@@ -51,7 +59,7 @@ export function PostMessageForm() {
       const { type, size } = file;
       if (type === "text/plain") {
         setResizedImage(null);
-        if (size > 100 * 10024) {
+        if (size > 100 * 1024) {
           toast.error("maximum text file size is 100Kb");
           setValue("file", "");
         }
@@ -62,110 +70,128 @@ export function PostMessageForm() {
   };
 
   return (
-    <div>
-      <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-        <label>
-          User name
-          <input
-            type="text"
-            {...register("username", {
-              required: "Please enter your name",
-              minLength: { value: 2, message: "min length is 2" },
-              pattern: {
-                value: usernamePattern,
-                message: "Only latin letters or digits",
-              },
-            })}
-            placeholder="User name"
-          />
-        </label>
-        <p>{errors.username?.message}</p>
-        <label>
-          Email
-          <input
-            type="email"
-            {...register("email", {
-              required: "Please enter your email address",
-              pattern: {
-                value: emailPattern,
-                message: "Invalid email address",
-              },
-            })}
-            placeholder="E-mail"
-            autoComplete="off"
-          />
-        </label>
-        <p>{errors.email?.message}</p>
-        <label>
-          Home page
-          <input
-            type="text"
-            {...register("homepage", {
-              pattern: {
-                value: urlPattern,
-                message: "Invalid url",
-              },
-            })}
-            placeholder="Homepage URL"
-            autoComplete="off"
-          />
-        </label>
-        <p>{errors.homepage?.message}</p>
-        <label>
-          Captcha
-          <input
-            type="text"
-            {...register("captcha", {
-              required: "Please enter your email address",
-              pattern: {
-                value: captchaPattern,
-                message: "Only latin letters or digits",
-              },
-            })}
-            // id="captcha"
-            placeholder="captcha"
-            autoComplete="off"
-          />
-        </label>
-        {captchaData?.image && <img src={captchaData.image} />}
-        <button
-          type="button"
-          onClick={() => {
-            reload();
-          }}
-        >
-          reload
+    <PostMessageFormWrapper level={level}>
+      <div className="form-title">
+        <span>New message</span>
+        <button type="button" onClick={handleClose}>
+          <CloseCircleOutlined style={{ fontSize: "24px" }} />
         </button>
-        <p>{errors.captcha?.message}</p>
-        <label>
-          Message
-          <textarea
-            {...register("text", {
-              required: "Required field",
-              validate: validateHtmlTags,
-              // validate: (fieldValue) => fieldValue !== "111" || "not 111",
-              // pattern: {
-              //   value:
-              //   message: "Invalid url",
-              // },
-            })}
-            // id="message"
-            placeholder="message text"
-            autoComplete="off"
+      </div>
+      <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+        <div className="column-one">
+          <label>
+            User name
+            <input
+              type="text"
+              {...register("username", {
+                required: "Please enter your name",
+                minLength: { value: 2, message: "min length is 2" },
+                pattern: {
+                  value: usernamePattern,
+                  message: "Only latin letters or digits",
+                },
+              })}
+              placeholder="User name"
+            />
+          </label>
+          <p>{errors.username?.message}</p>
+          <label>
+            Email
+            <input
+              type="email"
+              {...register("email", {
+                required: "Please enter your email address",
+                pattern: {
+                  value: emailPattern,
+                  message: "Invalid email address",
+                },
+              })}
+              placeholder="E-mail"
+              autoComplete="off"
+            />
+          </label>
+          <p>{errors.email?.message}</p>
+          <label>
+            Home page
+            <input
+              type="text"
+              {...register("homepage", {
+                pattern: {
+                  value: urlPattern,
+                  message: "Invalid url",
+                },
+              })}
+              placeholder="Homepage URL"
+              autoComplete="off"
+            />
+          </label>
+          <p>{errors.homepage?.message}</p>
+        </div>
+        <div className="column-two">
+          <label>
+            Message
+            <textarea
+              {...register("text", {
+                required: "Required field",
+                validate: validateHtmlTags,
+              })}
+              placeholder="message text"
+              autoComplete="off"
+              cols={40}
+              rows={6}
+            />
+          </label>
+          <p>{errors.text?.message}</p>{" "}
+          <div className="captcha-send-wrapper">
+            <div className="captcha-error-wrapper">
+              <div className="captcha">
+                <label>
+                  <input
+                    type="text"
+                    {...register("captcha", {
+                      required: "captcha required",
+                      pattern: {
+                        value: captchaPattern,
+                        message: "Only latin letters or digits",
+                      },
+                    })}
+                    // id="captcha"
+                    placeholder="captcha"
+                    autoComplete="off"
+                  />
+                </label>
+
+                {captchaData?.image && (
+                  <img
+                    src={captchaData.image}
+                    alt="captcha"
+                    className="captcha-image"
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    reload();
+                  }}
+                >
+                  <RedoOutlined rotate={-90} />
+                </button>
+              </div>
+              <p>{errors.captcha?.message}</p>
+            </div>
+
+            <button type="submit">Send</button>
+          </div>
+          <input
+            {...register("file")}
+            type="file"
+            accept=".png,.jpeg,.jpg,.gif,.txt"
+            onChange={onChange}
           />
-        </label>
-        <p>{errors.text?.message}</p>
-        <input
-          {...register("file")}
-          type="file"
-          accept=".png,.jpeg,.jpg,.gif,.txt"
-          onChange={onChange}
-          // id="file"
-        />
-        {resizedImage && <img src={resizedImage} alt="uploaded image" />}
-        <button type="submit">Send</button>
+          {resizedImage && <img src={resizedImage} alt="uploaded image" />}
+          <div>{parsedText}</div>
+        </div>
       </form>
-      {parsedText}
-    </div>
+    </PostMessageFormWrapper>
   );
-}
+};
