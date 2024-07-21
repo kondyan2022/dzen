@@ -22,6 +22,8 @@ const getPostsByParent = async (req, res, next) => {
 const addPost = async (req, res, next) => {
   const { username, email, homepage, text, parentId } = req.body;
   const file = req?.file;
+  const io = req?.io;
+
   return res.status(201).json(
     await postService.createPost({
       username,
@@ -30,6 +32,7 @@ const addPost = async (req, res, next) => {
       text,
       parentId,
       file,
+      io,
     })
   );
 };

@@ -1,6 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
-const { Post, User, sequelize } = require("../models");
+const { Post, User, Answers, sequelize } = require("../models");
 const { HttpError } = require("../utils");
 
 const uploadDir = path.join(__dirname, "../", "upload");
@@ -59,7 +59,10 @@ const createPost = async ({
   text,
   parentId,
   file,
+  io,
 }) => {
+  let post;
+  let userData;
   const transaction = await sequelize.transaction();
   try {
     let user = await User.findOne({ where: { email } }, { transaction });
@@ -70,24 +73,28 @@ const createPost = async ({
         { transaction }
       );
     }
-    const { dataValues: userData } = user;
+    userData = user.dataValues;
+    console.log("line77", userData);
     const postData = { userId: userData.id, parentId, messageText: text };
     if (file) {
       postData["attachedFile"] = file.filename;
     }
 
-    const post = await Post.create(postData, { transaction });
+    post = await Post.create(postData, { transaction });
 
     if (file) {
       await fs.rename(file.path, path.join(uploadDir, file.filename));
     }
     await transaction.commit();
-    return { post };
   } catch (error) {
     console.log(error);
     await transaction.rollback();
     throw HttpError(500);
   }
+  io.emit("new-post", { post, user: userData });
+  const count = await Answers.findOne({ where: { postId: post.parentId } });
+  io.emit("child-count-update", { ...count.dataValues });
+  return { post };
 };
 
 module.exports = {

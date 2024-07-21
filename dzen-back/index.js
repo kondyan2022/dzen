@@ -1,4 +1,4 @@
-const app = require("./app");
+const { server } = require("./app");
 // const redisClient = require("./redis");
 const { sequelize } = require("./models");
 
@@ -8,7 +8,7 @@ sequelize
   .authenticate()
   .then(() => {
     console.log("DB Connection has been established successfully.");
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server running. Use our API on port: ${PORT}`);
     });
   })

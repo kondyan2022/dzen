@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import parse from "html-react-parser";
 import { toast } from "react-toastify";
@@ -13,7 +13,14 @@ import { useCaptcha } from "../../hooks";
 import { sendPost } from "../../api";
 import { useResizedImage } from "../../hooks/useResizedImage";
 import { PostMessageFormWrapper } from "./PostMessageForm.styled";
-import { CloseCircleOutlined, RedoOutlined } from "@ant-design/icons";
+import {
+  BoldOutlined,
+  CloseCircleOutlined,
+  CodeOutlined,
+  ItalicOutlined,
+  LinkOutlined,
+  RedoOutlined,
+} from "@ant-design/icons";
 // import { resizedImageIfNeed } from "../../utils";
 
 export const PostMessageForm = ({ level = 0, parentId, handleClose }) => {
@@ -28,6 +35,11 @@ export const PostMessageForm = ({ level = 0, parentId, handleClose }) => {
   const [parsedText, setParsedText] = useState(null);
   const [resizedImage, setResizedImage, ratio] = useResizedImage();
   const { loading, data: captchaData, error, reload } = useCaptcha();
+  const refTextarea = useRef();
+  const { ref, ...rest } = register("text", {
+    required: "Required field",
+    validate: validateHtmlTags,
+  });
 
   const onSubmit = async (data) => {
     setParsedText(parse(data.text));
@@ -130,18 +142,55 @@ export const PostMessageForm = ({ level = 0, parentId, handleClose }) => {
         <div className="column-two">
           <label>
             Message
+            <BoldOutlined
+              onClick={(e) => {
+                const {
+                  selectionEnd,
+                  selectionStart,
+                  selectionDirection,
+                  value,
+                } = refTextarea.current;
+                const [first, last] =
+                  selectionDirection === "forward"
+                    ? [selectionStart, selectionEnd]
+                    : [selectionEnd, selectionStart];
+                const length = last - first;
+
+                const output1 = [
+                  value.slice(0, last),
+                  "</strong>",
+                  value.slice(last),
+                ].join("");
+                const output2 = [
+                  output1.slice(0, first),
+                  "<strong>",
+                  output1.slice(first),
+                ].join("");
+                // console.log(output2);
+
+                setValue("text", output2);
+                refTextarea.current.setSelectionRange(
+                  first + 8,
+                  first + 8 + length
+                );
+              }}
+            />
+            <ItalicOutlined />
+            <CodeOutlined />
+            <LinkOutlined />
             <textarea
-              {...register("text", {
-                required: "Required field",
-                validate: validateHtmlTags,
-              })}
+              {...rest}
               placeholder="message text"
               autoComplete="off"
               cols={40}
               rows={6}
+              ref={(e) => {
+                ref(e);
+                refTextarea.current = e;
+              }}
             />
           </label>
-          <p>{errors.text?.message}</p>{" "}
+          <p>{errors.text?.message}</p>
           <div className="captcha-send-wrapper">
             <div className="captcha-error-wrapper">
               <div className="captcha">
@@ -182,12 +231,17 @@ export const PostMessageForm = ({ level = 0, parentId, handleClose }) => {
 
             <button type="submit">Send</button>
           </div>
-          <input
-            {...register("file")}
-            type="file"
-            accept=".png,.jpeg,.jpg,.gif,.txt"
-            onChange={onChange}
-          />
+          <label>
+            Add file
+            <input
+              className="hidden-element"
+              {...register("file")}
+              type="file"
+              accept=".png,.jpeg,.jpg,.gif,.txt"
+              onChange={onChange}
+              id="file"
+            />
+          </label>
           {resizedImage && <img src={resizedImage} alt="uploaded image" />}
           <div>{parsedText}</div>
         </div>

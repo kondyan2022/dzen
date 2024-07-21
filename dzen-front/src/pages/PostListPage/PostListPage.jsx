@@ -19,7 +19,7 @@ import { PostMessageForm } from "../../components/PostMessageForm";
 
 export function PostListPage() {
   const {
-    data: { posts, pageCount, postCount, limit, page },
+    data: { posts, pageCount, postCount, limit, page, sort },
   } = useLoaderData();
 
   const [searchParams, setSearchParams] = useSearchParams();

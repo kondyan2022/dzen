@@ -36,7 +36,7 @@ export const MessageCard = ({
   const [reply, setReply] = useState(false);
 
   const expandChildren = () => {
-    console.log("expand");
+    // console.log("expand");
     if (childListExpanded) return;
     if (childListLoaded) {
       setChildExpand(id, true);
@@ -51,7 +51,6 @@ export const MessageCard = ({
   };
 
   const linkHandle = (e) => {
-    console.dir(e.target);
     if (e.target.tagName.toLowerCase() == "a") {
       e.preventDefault();
       window.open(e.target.href, "_blank", "noopener,noreferrer");
@@ -59,6 +58,7 @@ export const MessageCard = ({
   };
 
   const handleReply = () => {
+    expandChildren();
     setReply(true);
   };
 
