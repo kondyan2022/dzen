@@ -1,21 +1,19 @@
-import { useLoaderData, useNavigate, useSearchParams } from "react-router-dom";
-
-import { paramsToObject } from "../../utils";
-
-import { usePosts } from "../../hooks/usePosts";
-import { Pagination } from "antd";
 import { useEffect, useState } from "react";
+import { useLoaderData, useNavigate, useSearchParams } from "react-router-dom";
+import { Pagination } from "antd";
+import { ExclamationCircleOutlined, FormOutlined } from "@ant-design/icons";
+import { paramsToObject } from "../../utils";
+import { usePosts } from "../../hooks/usePosts";
 import { MessageCard } from "../../components/MessageCard/MessageCard";
 import { ButtonReload, PostListPageWrapper } from "./PostLisPage.styled";
 import { FilterPanel } from "../../components/FilterPanel/FilterPanel";
-import { ExclamationCircleOutlined, FormOutlined } from "@ant-design/icons";
 import { useDragger } from "../../hooks";
 import { PostMessageForm } from "../../components/PostMessageForm";
 import { Container } from "../../components/Container";
 
 export function PostListPage() {
   const {
-    data: { posts, pageCount, postCount, limit, page, sort },
+    data: { posts, pageCount, postCount, limit, page },
   } = useLoaderData();
 
   const navigate = useNavigate();
