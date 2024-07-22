@@ -1,9 +1,10 @@
 const HttpError = require("./HttpError");
 const ctrlWrapper = require("./ctrlWrapper");
 const cleanUpload = require("./cleanUpload");
-
-module.exports = {
+const generateCacheKey = require("./generateCacheKey");
+const allowedMimeTypes = (module.exports = {
   HttpError,
   ctrlWrapper,
   cleanUpload,
-};
+  generateCacheKey,
+});

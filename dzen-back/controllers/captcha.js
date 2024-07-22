@@ -3,12 +3,11 @@ const { ctrlWrapper, HttpError } = require("../utils");
 
 const createCaptcha = async (req, res, next) => {
   return res.status(201).json(await captchaService.getCaptcha(200, 120));
-  //   console.log(captchaService.getCaptcha(200, 150));
-  //   return res.status(201).json({ message: "Hello" });
 };
 
 const checkCaptcha = async (req, res, next) => {
   const { text, uuid } = req.body;
+  console.log("Controller", { text, uuid });
   if (!(await captchaService.checkCaptcha(text, uuid))) {
     throw HttpError(401, "Invalid captcha");
   }

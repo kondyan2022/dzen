@@ -1,7 +1,9 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { Post, User, Answers, sequelize } = require("../models");
+const redisClient = require("../redisClient");
 const { HttpError } = require("../utils");
+const { clearCacheForRoute } = require("./redis");
 
 const uploadDir = path.join(__dirname, "../", "upload");
 
@@ -91,6 +93,24 @@ const createPost = async ({
     await transaction.rollback();
     throw HttpError(500);
   }
+  if (redisClient.isReady) {
+    try {
+      if (post.parentId) {
+        await clearCacheForRoute(`/posts/${post.parentId}*`);
+        const parentPost = await Post.findByPk(post.parentId);
+        if (parentPost.dataValues.parentId) {
+          await clearCacheForRoute(`/posts/${parentPost.dataValues.parentId}*`);
+        } else {
+          await clearCacheForRoute(`/posts*`, "posts");
+        }
+      } else {
+        await clearCacheForRoute(`/posts*`, "posts");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   io.emit("new-post", { post, user: userData });
   if (post.parentId) {
     const count = await Answers.findOne({ where: { postId: post.parentId } });

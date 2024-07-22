@@ -1,9 +1,11 @@
 const { createCanvas } = require("canvas");
+const redisClient = require("../redisClient");
+const { clearCacheForRoute } = require("./redis");
 
 const FONT_BASE = 200;
 const FONT_SIZE = 35;
 
-const redis = {};
+const captchaList = {};
 
 const randomText = () => Math.random().toString(36).substring(2, 8);
 
@@ -31,15 +33,29 @@ const getCaptcha = async (width, height) => {
   ctx.rotate(randomRotation());
   const text = configureText(ctx, width, height);
   const uuid = crypto.randomUUID();
-  redis[uuid] = text;
+
+  if (redisClient.isReady) {
+    await redisClient.set(uuid, text, "EX", 120);
+  } else {
+    captchaList[uuid] = text;
+    setTimeout(() => {
+      delete captchaList[uuid];
+    }, 120000);
+  }
   console.log(text);
   return { image: canvas.toDataURL(), uuid };
 };
 
 const checkCaptcha = async (text, uuid) => {
+  console.log("checkCaptcha", { text, uuid });
   if (text) {
-    if (redis[uuid] === text) {
-      delete redis[uuid];
+    if (redisClient.isReady) {
+      if (text === (await redisClient.get(uuid))) {
+        await clearCacheForRoute(uuid);
+        return true;
+      }
+    } else if (captchaList[uuid] === text) {
+      delete captchaList[uuid];
       return true;
     }
   }
