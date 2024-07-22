@@ -8,9 +8,6 @@ const clearCacheForRoute = async (route, prefix) => {
 
     if (keys.length > 0) {
       await redisClient.del(keys);
-      console.log(`Cache for pattern "${pattern}" cleared`);
-    } else {
-      console.log(`No cache found for pattern "${pattern}"`);
     }
   } catch (err) {
     console.error("Redis error:", err);

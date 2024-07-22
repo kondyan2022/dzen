@@ -9,7 +9,7 @@ const getToken = async (id) => {
   const payload = { id };
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: 10000 }); //10s
   if (redisClient.isReady) {
-    await redisClient.set(id, token, "EX", 10);
+    await redisClient.set(id, token, { EX: 10 });
   } else {
     tokenList[id] = token;
     setInterval(() => {

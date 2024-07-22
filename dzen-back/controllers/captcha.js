@@ -7,7 +7,6 @@ const createCaptcha = async (req, res, next) => {
 
 const checkCaptcha = async (req, res, next) => {
   const { text, uuid } = req.body;
-  console.log("Controller", { text, uuid });
   if (!(await captchaService.checkCaptcha(text, uuid))) {
     throw HttpError(401, "Invalid captcha");
   }

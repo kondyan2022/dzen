@@ -29,6 +29,9 @@ export function useDragger(id, fixed = false) {
       coords.current.lastX = target.offsetLeft;
       coords.current.lastY = target.offsetTop;
     };
+    const onMouseUpContainer = () => {
+      isClicked.current = false;
+    };
 
     const onMouseMove = (e) => {
       if (!isClicked.current) return;
@@ -50,12 +53,14 @@ export function useDragger(id, fixed = false) {
 
     target.addEventListener("mousedown", onMouseDown);
     target.addEventListener("mouseup", onMouseUp);
+    container.addEventListener("mouseup", onMouseUpContainer);
     container.addEventListener("mousemove", onMouseMove);
     container.addEventListener("mouseleave", onMouseUp);
 
     const cleanup = () => {
       target.removeEventListener("mousedown", onMouseDown);
       target.removeEventListener("mouseup", onMouseUp);
+      container.removeEventListener("mouseup", onMouseUpContainer);
       container.removeEventListener("mousemove", onMouseMove);
       container.removeEventListener("mouseleave", onMouseUp);
     };

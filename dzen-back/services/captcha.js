@@ -35,19 +35,17 @@ const getCaptcha = async (width, height) => {
   const uuid = crypto.randomUUID();
 
   if (redisClient.isReady) {
-    await redisClient.set(uuid, text, "EX", 120);
+    await redisClient.set(uuid, text, { EX: 120 });
   } else {
     captchaList[uuid] = text;
     setTimeout(() => {
       delete captchaList[uuid];
     }, 120000);
   }
-  console.log(text);
   return { image: canvas.toDataURL(), uuid };
 };
 
 const checkCaptcha = async (text, uuid) => {
-  console.log("checkCaptcha", { text, uuid });
   if (text) {
     if (redisClient.isReady) {
       if (text === (await redisClient.get(uuid))) {

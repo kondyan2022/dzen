@@ -11,19 +11,16 @@ const cacheMiddleware = (prefix) => async (req, res, next) => {
   }
 
   const cacheKey = generateCacheKey(req, prefix);
-  console.log(cacheKey);
   try {
     const data = await redisClient.get(cacheKey);
 
     if (data) {
-      console.log("cache response");
       return res.send(JSON.parse(data));
     } else {
       res.sendResponse = res.send;
       res.send = async (body) => {
         try {
-          await redisClient.set(cacheKey, JSON.stringify(body), "EX", 600);
-          console.log("cache save");
+          await redisClient.set(cacheKey, JSON.stringify(body), { EX: 600 });
         } catch (err) {
           console.error("Error setting cache:", err);
         }

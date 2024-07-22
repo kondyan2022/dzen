@@ -143,7 +143,6 @@ export const PostMessageForm = ({
           </div>
           <div className="column-two">
             <TextareaInput />
-            {/* <p>{errors.text?.message}</p> */}
             <div className="captcha-send-wrapper">
               <div className="captcha-error-wrapper">
                 <div className="captcha">

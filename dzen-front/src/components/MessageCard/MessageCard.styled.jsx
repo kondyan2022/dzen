@@ -4,6 +4,7 @@ export const MessageCardWrapper = styled.div`
   /* box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.02); */
   margin-left: ${(props) => `${!props.level ? 0 : 40}px`};
   margin-bottom: 20px;
+  border-left: ${(props) => `${props.level ? "1px solid lightblue" : "none"}`};
 `;
 
 export const MessageTitle = styled.div`

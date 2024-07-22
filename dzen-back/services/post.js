@@ -69,14 +69,14 @@ const createPost = async ({
   try {
     let user = await User.findOne({ where: { email } }, { transaction });
     if (!user) {
-      const avatar = `avatar${Math.floor(Math.random() * (50 - 1) + 1)}.svg`;
+      const avatar = `avatar${Math.floor(Math.random() * (20 - 1) + 1)}.svg`;
       user = await User.create(
         { username, email, homepage, avatar },
         { transaction }
       );
     }
     userData = user.dataValues;
-    console.log("line77", userData);
+
     const postData = { userId: userData.id, parentId, messageText: text };
     if (file) {
       postData["attachedFile"] = file.filename;

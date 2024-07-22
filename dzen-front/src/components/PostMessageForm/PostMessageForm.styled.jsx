@@ -4,6 +4,7 @@ export const PostMessageFormWrapper = styled.div`
   box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   margin-top: 20px;
+  margin-bottom: 20px;
   margin-right: 20px;
   padding: 0;
   margin-left: ${(props) => `${props.level * 40 + 20}px`};
