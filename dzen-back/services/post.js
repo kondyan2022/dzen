@@ -1,10 +1,10 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { Post, User, Answers, sequelize } = require("../models");
-const redisClient = require("../redisClient");
 const { HttpError } = require("../utils");
-const { clearCacheForRoute } = require("./redis");
+const redisService = require("./redis");
 
+// eslint-disable-next-line no-undef
 const uploadDir = path.join(__dirname, "../", "upload");
 
 const checkParentId = async (parentId) => {
@@ -93,18 +93,20 @@ const createPost = async ({
     await transaction.rollback();
     throw HttpError(500);
   }
-  if (redisClient.isReady) {
+  if (redisService.redisClient.isReady) {
     try {
       if (post.parentId) {
-        await clearCacheForRoute(`/posts/${post.parentId}*`);
+        await redisService.clearCacheForRoute(`/posts/${post.parentId}*`);
         const parentPost = await Post.findByPk(post.parentId);
         if (parentPost.dataValues.parentId) {
-          await clearCacheForRoute(`/posts/${parentPost.dataValues.parentId}*`);
+          await redisService.clearCacheForRoute(
+            `/posts/${parentPost.dataValues.parentId}*`
+          );
         } else {
-          await clearCacheForRoute(`/posts*`, "posts");
+          await redisService.clearCacheForRoute(`/posts*`, "posts");
         }
       } else {
-        await clearCacheForRoute(`/posts*`, "posts");
+        await redisService.clearCacheForRoute(`/posts*`, "posts");
       }
     } catch (error) {
       console.log(error);

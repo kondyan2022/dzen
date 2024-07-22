@@ -4,8 +4,6 @@ const cors = require("cors");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 
-require("dotenv").config();
-
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -28,7 +26,7 @@ app.use("/files", express.static("upload"));
 app.use("/captcha", captchaRouter);
 app.use("/posts", attachSocketServer(io), postsRouter);
 
-io.on("connection", (socket) => {
+io.on("connection", () => {
   console.log("client connected");
 });
 

@@ -2,7 +2,6 @@ const redisClient = require("../redisClient");
 
 const clearCacheForRoute = async (route, prefix) => {
   const pattern = prefix ? `${prefix}:${route}` : `${route}`;
-
   try {
     const keys = await redisClient.keys(pattern);
 
@@ -14,4 +13,4 @@ const clearCacheForRoute = async (route, prefix) => {
   }
 };
 
-module.exports = { clearCacheForRoute };
+module.exports = { clearCacheForRoute, redisClient };

@@ -1,5 +1,5 @@
 const { server } = require("./app");
-// const redisClient = require("./redis");
+require("dotenv").config();
 const { sequelize } = require("./models");
 
 const { PORT = 3000 } = process.env;
