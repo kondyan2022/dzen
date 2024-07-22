@@ -92,8 +92,10 @@ const createPost = async ({
     throw HttpError(500);
   }
   io.emit("new-post", { post, user: userData });
-  const count = await Answers.findOne({ where: { postId: post.parentId } });
-  io.emit("child-count-update", { ...count.dataValues });
+  if (post.parentId) {
+    const count = await Answers.findOne({ where: { postId: post.parentId } });
+    io.emit("child-count-update", { ...count.dataValues });
+  }
   return { post };
 };
 

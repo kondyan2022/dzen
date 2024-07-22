@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 
 export const PostListPageWrapper = styled.div`
-  /* height: 100vh; */
-
+  padding: 50px 0;
   .post-list {
     padding: 20px;
     display: flex;
@@ -17,8 +16,8 @@ export const PostListPageWrapper = styled.div`
 
   .new-message {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 30px;
+    right: 30px;
     transition-property: opacity, visibility;
     transition-duration: 500ms;
     transition-timing-function: ease-in-out;
@@ -37,4 +36,9 @@ export const PostListPageWrapper = styled.div`
       }
     }
   }
+`;
+
+export const ButtonReload = styled.button`
+  margin-left: auto;
+  width: 120px;
 `;

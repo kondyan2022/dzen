@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
 export const FilterPanelWrapper = styled.div`
+  margin: 20px;
+  display: flex;
+  align-items: center;
   box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-  button {
+  .filter-button {
     width: 180px;
     border: none;
     outline: none;

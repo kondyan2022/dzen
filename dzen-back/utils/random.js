@@ -24,6 +24,5 @@ const downloadFile = async (url, fileName) => {
   for (let i = 1; i <= 50; i += 1) {
     const url = generator.generateRandomAvatar(i);
     await downloadFile(url, `avatar${i}.svg`);
-    console.log(i);
   }
 })();

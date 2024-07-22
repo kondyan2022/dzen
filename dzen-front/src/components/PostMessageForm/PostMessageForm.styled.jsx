@@ -16,16 +16,10 @@ export const PostMessageFormWrapper = styled.div`
     background-color: #f9f9f9;
     font-weight: 600;
     color: navy;
-    button {
-      padding: 0;
-      &:hover {
-        transform: scale(1.2);
-      }
-    }
   }
   form {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 2fr;
     div {
       display: flex;
       flex-direction: column;
@@ -42,6 +36,7 @@ export const PostMessageFormWrapper = styled.div`
       textarea {
         width: 100%;
         display: block;
+        padding: 5px;
         margin-top: 3px;
       }
     }
@@ -63,11 +58,25 @@ export const PostMessageFormWrapper = styled.div`
     button {
       width: auto;
     }
+    .column-two {
+      position: relative;
+    }
+    .add-file-label {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      &:hover {
+        color: navy;
+        transform: scale(1.2);
+      }
+    }
     .captcha-send-wrapper {
       padding: 0;
       display: flex;
       flex-direction: row;
-      align-items: center;
+      align-items: top;
 
       .captcha-error-wrapper {
         padding: 0;
@@ -100,5 +109,17 @@ export const PostMessageFormWrapper = styled.div`
         }
       }
     }
+  }
+`;
+
+export const SubmitButton = styled.button`
+  height: 52px;
+  background-color: blue;
+  color: white;
+  flex: 1;
+  font-weight: 600;
+  transition: background-color 400ms ease-in-out;
+  &:hover {
+    background-color: navy;
   }
 `;

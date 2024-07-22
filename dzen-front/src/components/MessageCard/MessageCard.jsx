@@ -2,6 +2,7 @@ import { getAvatarUrl } from "../../api";
 import parse from "html-react-parser";
 import { format } from "date-fns";
 import {
+  AnswerButtonWrapper,
   ChildNavigator,
   MessageCardWrapper,
   MessageText,
@@ -17,6 +18,7 @@ export const MessageCard = ({
   data,
   getChildPosts,
   setChildExpand,
+  setChildLoaded,
   level = 0,
 }) => {
   const {
@@ -36,7 +38,6 @@ export const MessageCard = ({
   const [reply, setReply] = useState(false);
 
   const expandChildren = () => {
-    // console.log("expand");
     if (childListExpanded) return;
     if (childListLoaded) {
       setChildExpand(id, true);
@@ -45,7 +46,6 @@ export const MessageCard = ({
     }
   };
   const CollapseChildren = () => {
-    console.log("colapse");
     if (!childListExpanded) return;
     setChildExpand(id, false);
   };
@@ -59,10 +59,22 @@ export const MessageCard = ({
 
   const handleReply = () => {
     expandChildren();
+    if (!answerCount) {
+      setChildLoaded(id, true);
+      setChildExpand(id, true);
+    }
     setReply(true);
   };
 
   const handleClose = useCallback(() => {
+    if (!answerCount) {
+      setChildLoaded(id, false);
+      setChildExpand(id, false);
+    }
+    setReply(false);
+  }, [answerCount, id, setChildExpand, setChildLoaded]);
+
+  const handleCloseAfterSubmit = useCallback(() => {
     setReply(false);
   }, []);
 
@@ -73,19 +85,21 @@ export const MessageCard = ({
         <div>{username}</div>
         <div>{email}</div>
         <div>{format(new Date(createdAt), "dd.MM.yyyy' 'HH:mm")}</div>
-        {data.id}
-        {`level:${level}`}
-        <AttachedFileButton filename={attachedFile} />
-        {!reply && (
-          <button
-            type="button"
-            onClick={handleReply}
-            className="reply-button"
-            title="Reply"
-          >
-            <CommentOutlined style={{ fontSize: 24 }} />
-          </button>
-        )}
+        {/* {data.id}
+        {`level:${level}`} */}
+        <AnswerButtonWrapper>
+          <AttachedFileButton filename={attachedFile} />
+          {!reply && (
+            <button
+              type="button"
+              onClick={handleReply}
+              className="reply-button"
+              title="Reply"
+            >
+              <CommentOutlined style={{ fontSize: 24 }} />
+            </button>
+          )}
+        </AnswerButtonWrapper>
         <ChildNavigator>
           <button
             type="button"
@@ -112,6 +126,7 @@ export const MessageCard = ({
           parentId={id}
           level={level + 1}
           handleClose={handleClose}
+          handleCloseAfterSubmit={handleCloseAfterSubmit}
         />
       )}
       {childListExpanded &&
@@ -123,9 +138,9 @@ export const MessageCard = ({
             level={level + 1}
             getChildPosts={getChildPosts}
             setChildExpand={setChildExpand}
+            setChildLoaded={setChildLoaded}
           />
         ))}
     </MessageCardWrapper>
   );
 };
-// ˅˄˅↑↓

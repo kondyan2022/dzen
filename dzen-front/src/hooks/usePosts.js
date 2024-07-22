@@ -1,51 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { API_URL, getChildPosts } from "../api";
 import { io } from "socket.io-client";
-
-const idIsPresent = (items, id) => {
-  const iterateItems = (items) => {
-    items.forEach((elem) => {
-      if (elem.id === id) {
-        throw elem;
-      }
-      if (elem.childList.length) {
-        iterateItems(elem.childList);
-      }
-    });
-  };
-
-  try {
-    iterateItems(items);
-  } catch (e) {
-    return e;
-  }
-};
-
-const getIterateFunction = (conditionFunc, thenFunc) => {
-  const fn = (items) =>
-    items.map((elem) =>
-      conditionFunc(elem)
-        ? thenFunc(elem)
-        : { ...elem, childList: fn(elem.childList) }
-    );
-
-  return fn;
-};
-
-// const addNewPostToState = (posts) =>
-//   getIterateFunction(elem => (elem.childListLoaded && elem.id === parentId), elem=>({
-//                   ...elem,
-//                   childList: [
-//                     {
-//                       ...data.post,
-//                       user: data.user,
-//                       childListLoaded: false,
-//                       childListExpanded: false,
-//                       childList: [],
-//                     },
-//                     ...elem.childList,
-//                   ],
-//                 }))(posts)
+import {
+  getChildCountUpdateFunc,
+  getNewPostFunc,
+  getSetChildExpandFn,
+  getSetChildLoadedFn,
+  getSetChildPostsFunc,
+} from "../utils/postDataFunction";
 
 export const usePosts = () => {
   const [posts, setPosts] = useState([]);
@@ -63,60 +25,17 @@ export const usePosts = () => {
     if (!socket) return;
     socket.on("new-post", (data) => {
       const parentId = data.post?.parentId;
-      console.log(data);
       if (!parentId) {
-        console.log("new post in root");
         setRootNeedUpdate(true);
         return;
       }
-      setPosts((prev) => {
-        if (!idIsPresent(prev, parentId)) {
-          console.log("No parentId ");
-          return prev;
-        }
-        const treeRec = (items) =>
-          items.map((elem) =>
-            elem.childListLoaded && elem.id === parentId
-              ? {
-                  ...elem,
-                  childList: [
-                    {
-                      ...data.post,
-                      user: data.user,
-                      childListLoaded: false,
-                      childListExpanded: false,
-                      childList: [],
-                    },
-                    ...elem.childList,
-                  ],
-                }
-              : { ...elem, childList: treeRec(elem.childList) }
-          );
 
-        const newState = treeRec(prev);
-        console.log("new", newState);
-        return newState;
-      });
+      setPosts(getNewPostFunc(parentId, data));
     });
 
     socket.on("child-count-update", (data) => {
       const { postId: id } = data;
-      setPosts((prev) => {
-        if (!idIsPresent(prev, id)) {
-          console.log("No id count amount ");
-          return prev;
-        }
-        const treeRec = (items) =>
-          items.map((elem) =>
-            elem.id === id
-              ? {
-                  ...elem,
-                  answers_count: data,
-                }
-              : { ...elem, childList: treeRec(elem.childList) }
-          );
-        return treeRec(prev);
-      });
+      setPosts(getChildCountUpdateFunc(id, data));
     });
 
     return () => {
@@ -148,29 +67,9 @@ export const usePosts = () => {
           childListExpanded: false,
           childList: [],
         }));
-        console.log("from hook", newList);
-        setPosts((prev) => {
-          const treeRec = (items) =>
-            items.map((elem) =>
-              elem.id === id
-                ? {
-                    ...elem,
-                    childListLoaded: true,
-                    childListExpanded: true,
-                    childList: newList,
-                    answers_count: {
-                      ...elem.answers_count,
-                      amount: newList.length,
-                    },
-                  }
-                : { ...elem, childList: treeRec(elem.childList) }
-            );
-
-          return treeRec(prev);
-        });
+        setPosts(getSetChildPostsFunc(id, newList));
       }
     } catch (error) {
-      console.log(error);
       setError(error);
     } finally {
       setLoading(false);
@@ -178,19 +77,21 @@ export const usePosts = () => {
   }, []);
 
   const setChildExpand = useCallback((id, flag) => {
-    setPosts((prev) => {
-      const treeRec = (items) =>
-        items.map((elem) =>
-          elem.id === id
-            ? {
-                ...elem,
-                childListExpanded: flag,
-              }
-            : { ...elem, childList: treeRec(elem.childList) }
-        );
-      return treeRec(prev);
-    });
+    setPosts(getSetChildExpandFn(id, flag));
   }, []);
 
-  return [posts, setPostList, setChildPosts, setChildExpand, loading, error];
+  const setChildLoaded = useCallback((id, flag) => {
+    setPosts(getSetChildLoadedFn(id, flag));
+  }, []);
+
+  return [
+    posts,
+    setPostList,
+    setChildPosts,
+    setChildExpand,
+    setChildLoaded,
+    rootNeedUpdate,
+    loading,
+    error,
+  ];
 };

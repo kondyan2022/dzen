@@ -21,7 +21,7 @@ export const MessageTitle = styled.div`
 `;
 
 export const ChildNavigator = styled.div`
-  margin-left: auto;
+  /* margin-left: auto; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,4 +56,8 @@ export const ChildNavigator = styled.div`
 
 export const MessageText = styled.div`
   padding: 20px;
+`;
+
+export const AnswerButtonWrapper = styled.span`
+  margin-left: auto;
 `;

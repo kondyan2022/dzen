@@ -23,7 +23,6 @@ export function useResizedImage() {
     };
     originalImage.onload = () => {
       let resizingFactor = 1;
-      console.log(originalImage.width, originalImage.height);
       if (
         originalImage.height > MAX_IMAGE_SIZE.height ||
         originalImage.width > MAX_IMAGE_SIZE.width

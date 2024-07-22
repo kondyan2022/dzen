@@ -29,7 +29,7 @@ app.use("/captcha", captchaRouter);
 app.use("/posts", attachSocketServer(io), postsRouter);
 
 io.on("connection", (socket) => {
-  console.log("!!!!!!!a user connected");
+  console.log("client connected");
 });
 
 app.use((req, res) => {

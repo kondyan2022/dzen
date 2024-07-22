@@ -5,7 +5,6 @@ export const validateHtmlTags = (text) => {
   let match;
 
   while ((match = tagPattern.exec(text))) {
-    console.log(match);
     const tag = match[1];
     const attributes = match[2] ? match[2].trim() : "";
     const isClosingTag = match[0][1] === "/";
@@ -15,9 +14,7 @@ export const validateHtmlTags = (text) => {
     }
 
     if (tag === "a" && !isClosingTag) {
-      console.log(attributes);
       const aTagMatch = aTagPattern.exec(attributes);
-      console.log(aTagMatch);
       if (!aTagMatch) {
         return `The <a> tag must contain the href and title attributes in that order.`;
       }

@@ -8,6 +8,7 @@ const fields = [
 ];
 
 export const FilterPanel = ({
+  children,
   field = "createdAt",
   direction = "DESC",
   onChange,
@@ -26,14 +27,12 @@ export const FilterPanel = ({
     <FilterPanelWrapper>
       {fields.map((elem) => (
         <button
+          className="filter-button"
           key={elem.name}
           type="button"
           onClick={() => setSort(elem.name)}
         >
-          <span>
-            {elem.title}
-            {"  "}
-          </span>
+          <span>{elem.title}</span>
           {elem.name === field &&
             (direction === "DESC" ? (
               <CaretDownOutlined />
@@ -42,6 +41,7 @@ export const FilterPanel = ({
             ))}
         </button>
       ))}
+      {children}
     </FilterPanelWrapper>
   );
 };
