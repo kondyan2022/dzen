@@ -85,8 +85,7 @@ export const MessageCard = ({
         <div>{username}</div>
         <div>{email}</div>
         <div>{format(new Date(createdAt), "dd.MM.yyyy' 'HH:mm")}</div>
-        {data.id}
-        {`level:${level}`}
+
         <AnswerButtonWrapper>
           <AttachedFileButton filename={attachedFile} />
           {!reply && (
