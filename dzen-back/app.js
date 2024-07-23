@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const logger = require("morgan");
 const cors = require("cors");
 const { createServer } = require("http");
@@ -6,8 +7,11 @@ const { Server } = require("socket.io");
 
 const app = express();
 const server = createServer(app);
+
+const { URL_FRONT } = process.env || "*";
+
 const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: { origin: URL_FRONT },
 });
 
 const captchaRouter = require("./routes/captcha");

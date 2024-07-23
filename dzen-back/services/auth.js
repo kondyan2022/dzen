@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const redisService = require("./redis");
 
 const { SECRET_KEY } = process.env;
-
+console.log({ SECRET_KEY });
 const tokenList = {};
 
 const getToken = async (id) => {
