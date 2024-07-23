@@ -11,7 +11,7 @@ const randomText = () => Math.random().toString(36).substring(2, 8);
 const relativeFont = (width) => {
   const ratio = FONT_SIZE / FONT_BASE;
   const size = width * ratio;
-  return `${size}px serif`;
+  return `${size}px`;
 };
 const angleRandom = (min, max) => Math.random() * (max - min) + min;
 const randomRotation = (degrees = 10) =>
