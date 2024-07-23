@@ -4,7 +4,7 @@
   "description": "test project",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node --trace-warnings  ./index.js",
+    "start": "cross-env NODE_ENV=production node ./index.js",
     "dev": "cross-env NODE_ENV=development nodemon ./index.js",
     "migrate": "npx sequelize-cli db:migrate",
     "done": "npx sequelize-cli db:migrate:undo"
