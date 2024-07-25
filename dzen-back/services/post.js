@@ -85,7 +85,8 @@ const createPost = async ({
     post = await Post.create(postData, { transaction });
 
     if (file) {
-      await fs.rename(file.path, path.join(uploadDir, file.filename));
+      await fs.copyFile(file.path, path.join(uploadDir, file.filename));
+      await fs.unlink(file.path);
     }
     await transaction.commit();
   } catch (error) {

@@ -52,7 +52,7 @@ services:
       - URL_REDIS=redis://redis:6379
       - URL_FRONT=${URL_FRONT}
     volumes:
-      - back_data:/upload
+      - back_data:/app/upload
     networks:
       - dev
 
