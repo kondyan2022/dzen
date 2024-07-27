@@ -1,4 +1,4 @@
-FROM node:alpine AS build
+FROM node:20.16-alpine AS build
 
 
 COPY package.json package.json

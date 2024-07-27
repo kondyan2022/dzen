@@ -58,15 +58,14 @@ services:
 
   front:
     build: ./dzen-front
-    # ports:
-    #   - "8080:80"
+    ports:
+      - "8080:80"
     environment:
       - VITE_API_URL=${VITE_API_URL}
     networks:
       - dev
 
 volumes:
+  back_data:
   postgres_data:
   redis_data:
-  back_data:
-  # nginx_data:

@@ -2,7 +2,7 @@ const { captchaService, authService } = require("../services");
 const { ctrlWrapper, HttpError } = require("../utils");
 
 const createCaptcha = async (req, res, next) => {
-  return res.status(201).json(await captchaService.getCaptchaGimp(200, 120));
+  await captchaService.getCaptchaGimp((data) => res.status(201).json(data));
 };
 
 const checkCaptcha = async (req, res, next) => {
